@@ -110,6 +110,7 @@ class _AboutUserScreenState extends State<AboutUserScreen> {
                                           fontSize: size.height * 0.02)),
                                 ],
                               ),
+
                             ),
                           ),
                         ),
