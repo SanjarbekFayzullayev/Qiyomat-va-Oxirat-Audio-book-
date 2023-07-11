@@ -33,6 +33,8 @@ class _MyAppState extends State<MyApp> {
     ]);
     return MaterialApp(
     debugShowCheckedModeBanner: false,
+      scrollBehavior: const ScrollBehavior(
+          androidOverscrollIndicator: AndroidOverscrollIndicator.stretch),
       theme: ThemeData(
 
       ),

@@ -370,8 +370,8 @@ class _DetalsPageState extends State<DetalsPage> {
                               inactiveColor: _isDark
                                   ? Constants().mainColor
                                   : Colors.brown,
-                              min: 0,
-                              max: duration.inSeconds.toDouble(),
+                              min:0.0,
+                              max: duration.inSeconds.toDouble()+20,
                               value: position.inSeconds.toDouble(),
                               onChanged: (value) async {
                                 final position =
@@ -485,11 +485,10 @@ class _DetalsPageState extends State<DetalsPage> {
                       style: ButtonStyle(
                           overlayColor:
                               MaterialStatePropertyAll(Constants().mainColor)),
-                      child: const Icon(Icons.copy, color: Colors.white),
+                      child:  Icon(Icons.copy, color: Colors.white),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(
-                          text: context.locale.toString() == "uz_UZ"
-                              ? widget.bookModel.descriptionUZ
+                          text: context.locale.toString() == "uz_UZ"  ? widget.bookModel.descriptionUZ!
                               : widget.bookModel.descriptionKR!,
                         ));
                         Constants().snackBar(
@@ -580,7 +579,7 @@ class _DetalsPageState extends State<DetalsPage> {
                       onPressed: () {
                         Clipboard.setData(ClipboardData(
                           text: context.locale.toString() == "uz_UZ"
-                              ? widget.bookModel.nameUZ
+                              ? widget.bookModel.nameUZ!
                               : widget.bookModel.nameKR!,
                         ));
                       },
