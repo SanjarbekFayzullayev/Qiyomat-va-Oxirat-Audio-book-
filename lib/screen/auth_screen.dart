@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:qiyomat_va_oxirat/service/ad_mob_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,9 +23,30 @@ class _HilolNashrScreenState extends State<HilolNashrScreen> {
   late bool _isDark = true;
   late bool _isFull = true;
   String username = '';
+  late BannerAd _bottomBannerAd;
+  bool _isBottomBannerAdLoaded = false;
 
+  void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    );
+    _bottomBannerAd.load();
+  }
   @override
   void initState() {
+    _createBottomBannerAd();
     super.initState();
     initial();
     getData();
@@ -74,6 +97,13 @@ class _HilolNashrScreenState extends State<HilolNashrScreen> {
   Widget build(BuildContext context) {
     String name = loginData.getString("username")!;
     return Scaffold(
+      bottomNavigationBar: _isBottomBannerAdLoaded
+          ? Container(
+        height: _bottomBannerAd.size.height.toDouble(),
+        width: _bottomBannerAd.size.width.toDouble(),
+        child: AdWidget(ad: _bottomBannerAd),
+      )
+          : null,
       backgroundColor: _isDark ? Colors.white : const Color(0xFF9D5919),
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),

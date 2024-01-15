@@ -1,3 +1,5 @@
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:qiyomat_va_oxirat/constants/constants.dart';
 import 'package:qiyomat_va_oxirat/provider/provider_favorute.dart';
 import 'package:qiyomat_va_oxirat/screen/lang_changet_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 void main()async{
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
 //
   await EasyLocalization.ensureInitialized();
   runApp(EasyLocalization(
@@ -32,6 +35,7 @@ class _MyAppState extends State<MyApp> {
       DeviceOrientation.portraitUp,
     ]);
     return MaterialApp(
+      color: Colors.white,
     debugShowCheckedModeBanner: false,
       scrollBehavior: const ScrollBehavior(
           androidOverscrollIndicator: AndroidOverscrollIndicator.stretch),

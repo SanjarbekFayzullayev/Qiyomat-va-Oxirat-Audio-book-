@@ -1,10 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:qiyomat_va_oxirat/constants/constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qiyomat_va_oxirat/moduls/book_muduls.dart';
+import 'package:qiyomat_va_oxirat/service/ad_mob_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,9 +32,30 @@ class _DetalsPageState extends State<DetalsPage> {
   Duration duration = Duration.zero;
   Duration duration2 = Duration.zero;
   Duration position = Duration.zero;
+  late BannerAd _bottomBannerAd;
+  bool _isBottomBannerAdLoaded = false;
 
+  void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    );
+    _bottomBannerAd.load();
+  }
   @override
   void initState() {
+    _createBottomBannerAd();
     super.initState();
     player.onPlayerStateChanged.listen((state) {
       setState(() {
@@ -207,6 +230,12 @@ class _DetalsPageState extends State<DetalsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _isFull ? headBar() : const SizedBox(),
+               _isBottomBannerAdLoaded
+                    ? Container(
+                  height: _bottomBannerAd.size.height.toDouble(),
+                  width: _bottomBannerAd.size.width.toDouble(),
+                  child: AdWidget(ad: _bottomBannerAd),
+                ) :SizedBox(),
                 Expanded(
                   child: SizedBox(
                       height: double.infinity,
