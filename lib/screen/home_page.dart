@@ -1,15 +1,16 @@
 import 'dart:io';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:qiyomat_va_oxirat/constants/constants.dart';
 import 'package:qiyomat_va_oxirat/provider/provider_favorute.dart';
 import 'package:qiyomat_va_oxirat/screen/bottom_nav_bar_screen.dart';
 import 'package:qiyomat_va_oxirat/screen/auth_screen.dart';
+import 'package:qiyomat_va_oxirat/service/ad_mob_service.dart';
 import 'package:qiyomat_va_oxirat/util/navigator_settings.dart';
 import 'package:qiyomat_va_oxirat/widgets/banner_item.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:lottie/lottie.dart';
 import 'package:qiyomat_va_oxirat/moduls/book_muduls.dart';
 import 'package:qiyomat_va_oxirat/screen/login_screen.dart';
 import 'package:qiyomat_va_oxirat/widgets/product_item.dart';
@@ -30,8 +31,30 @@ class _HomePageState extends State<HomePage> {
   String filName = '';
   late bool _isDark = true;
 
+  late BannerAd _bottomBannerAd;
+  bool _isBottomBannerAdLoaded = false;
+
+  void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    );
+    _bottomBannerAd.load();
+  }
   @override
   void initState() {
+    _createBottomBannerAd();
     getData();
     initial();
     super.initState();
@@ -58,6 +81,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Consumer<FavProvider>(
@@ -78,6 +103,13 @@ class _HomePageState extends State<HomePage> {
             builder: (context, value, child) {
               return SafeArea(
                 child: Scaffold(
+                  bottomNavigationBar: _isBottomBannerAdLoaded
+                      ? Container(
+                    height: _bottomBannerAd.size.height.toDouble(),
+                    width: _bottomBannerAd.size.width.toDouble(),
+                    child: AdWidget(ad: _bottomBannerAd),
+                  )
+                      : null,
                   backgroundColor:
                       _isDark ? Colors.white : Constants().darkLight,
                   appBar: AppBar(
@@ -121,10 +153,8 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
-               Expanded(
-                child: SizedBox(
-                  height: size.height*0.2
-                ),
+              Expanded(
+                child: SizedBox(height: size.height * 0.2),
               ),
               CircleAvatar(
                 backgroundColor: _isDark ? Colors.white : Constants().darkLight,
